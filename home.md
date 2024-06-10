@@ -1,4 +1,23 @@
-# Test
+# Progetto cybersecurity: LAMP security CTF4
+
+## Preparazione del progetto
+Ho utilizzato una macchina virtuale contentente KaliLinux per effettuare l'attacco mentre per il server vittima ho utilizzato il sito web root-me.org che permette di praticare attacchi su macchine vulnerabili.
+Threat model: connessione col server.
+
+## Strumenti utilizzati
+* Host
+* Nmap
+* sqlmap
+* _jhonn the ripper_ (Non utilizzato in quanto sqlmap aveva una funzione integrata)
+* Putty
+
+## Soluzione
+Una volta attivata la macchina virtuale mi è stato fornito un indirizzo del server. Per incominciare ho recuperato l'indirizzo ip (anche se non necessario per l'esecuzione dell'esercizio) ed eseguito
+uno scan su tutte le porte per vedere quali server erano in esequzione.
+
+![UX - User Experience](images/12650723674_d5c85af332_k.jpg ':class=banner-image')
+![UX Design Process/Toolkit](images/ux-toolkit-8-no-numbers.png)
+
 
 > ## What’s Happening This Week
 > ### How to explore the problem space?
