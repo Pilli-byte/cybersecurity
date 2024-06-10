@@ -1,4 +1,4 @@
-# CPT-363 User Interface Design
+# Test
 
 > ## What’s Happening This Week
 > ### How to explore the problem space?
