@@ -68,5 +68,3 @@ https://chousensha.github.io/blog/2016/04/19/pentest-lab-lampsecurity-ctf4/
 https://syrion89.wordpress.com/2016/12/20/lamp-security-ctf4/
 
 https://www.youtube.com/watch?v=J2aZMSJeSm0&t=592s
-
-htttps://8.8.8.8
