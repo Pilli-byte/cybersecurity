@@ -1,7 +1,7 @@
 # Progetto cybersecurity: LAMP security CTF4
 
 ## Preparazione del progetto
-Ho utilizzato una macchina virtuale contentente KaliLinux per effettuare l'attacco mentre per il server vittima ho utilizzato il sito web root-me.org che permette di praticare attacchi su macchine vulnerabili.
+Ho utilizzato una macchina virtuale contentente KaliLinux per effettuare l'attacco. Per simulare la vittima ho usato il servizio di hosting di root-me.org che offre la possibilità di testare le proprie capacità di pentesting.
 Threat model: connessione col server.
 
 ## Strumenti utilizzati
@@ -14,7 +14,7 @@ Threat model: connessione col server.
 ## Soluzione
 ### Reconnaissance
 Una volta attivata la macchina virtuale mi è stato fornito un indirizzo del server. Per incominciare ho recuperato l'indirizzo ip (anche se non necessario per l'esecuzione dell'esercizio) ed eseguito
-uno scan su tutte le porte per vedere quali server erano in esequzione. Ho trovato tre server in ascolto, tra cui un web server e un ssh server. Inoltre nel web server Nmap ho trovato la presenza del file robots.txt, utilizzato principalmente dai motori di ricerca per l'indicizzazione delle pagine, ma può essere utile per trovare pagine non direttamente accessibili da sito.
+uno scan su tutte le porte per vedere quali server erano in esequzione. Ho trovato tre server in ascolto, tra cui un web server e un ssh server. Inoltre nel web server Nmap ho trovato la presenza del file robots.txt. Il file robotts.txt è utilizzato principalmente dai motori di ricerca per l'indicizzazione delle pagine, ma può essere utile per trovare pagine non direttamente accessibili da sito.
 
 ![UX Design Process/Toolkit](images/1.png)
 
@@ -26,7 +26,7 @@ Una volta scoperto la presenza di un database ho cercato il modo di accederci. H
 1) Le richieste avvenivano in GET
 2) Nella sezione blog quando si entrava per leggere un articolo compariva nell'indirizzo il paramentro id.
 
-Così ho cercato di rompere la query aggiungendo ' per triggerare un errore, in caso affermativo questo implica la possibiltà di attaccare il server tramite sql injection.
+Così ho cercato di rompere la query aggiungendo ' alla fine dell'URL per triggerare un errore, in caso affermativo questo implica la possibiltà di attaccare il server tramite sql injection.
 
 ![UX Design Process/Toolkit](images/3.png)
 
@@ -44,7 +44,7 @@ Una volta constatato la presenza della vulnerabilità alle sql injection, ho uti
 
 3) sqlmap -u "ctf04.root-me.org/index.html?page=blog&title=Blog&id=2" -D ehks -T user --dump
 
-Il primo comando è riuscito a darmi la lista dei database presenti, mentre il secondo mi ha dato le tabelle presenti nel database ehks. Fino ad adesso nulla di nuovo in quanto queste informazioni le avevo già ottenute. Il terzo comando invece mi ha permesso di scaricare il conenuto della tabella user così facendo ho ottenuto guessing material. La continuazione dovrebbe essere di utilizzare jhon the ripper per cercare di indovinare gli hash delle password, ma mi è stata offerta la possibilità tramite sqlmap e così ho fatto.
+Il primo comando è riuscito a darmi la lista dei database presenti, mentre il secondo mi ha dato le tabelle presenti nel database ehks. Fino ad adesso nulla di nuovo in quanto queste informazioni le avevo già ottenute. Il terzo comando invece mi ha permesso di scaricare il conenuto della tabella user così facendo ho ottenuto guessing material. La continuazione dovrebbe essere di utilizzare jhon the ripper per cercare di indovinare gli hash delle password, ma mi è stata offerta la possibilità tramite sqlmap e così ho fatto. Gli hash delle password erano di tipo MD5.
 
 ![UX Design Process/Toolkit](images/5.png)
 
@@ -56,10 +56,17 @@ Gli account del sito non permettono di fare altro però potrebbe essere che abbi
 
 ![UX Design Process/Toolkit](images/7.png)
 
-Il report di Nmap indicava la presenza di un server ssh quindi ho provato usando sempre le stesse credenzali per provare a connetrmi al server, ha funzionato. Il Privilege Escalation è stato abbastanza 
-facile in quanto l'utente che ho impersonato faceva parte del gruppo degli admin. Quindi mi bastato inserire il comando "sudo su" e ripetere la stessa password usata per l'accesso ssh per ottenre il privilegio di root. Ho usato putty in quanto essendo un server vecchio, il comando da CLI non funzionava a causa di algoritmi di cifratura absoleti.
+Il report di Nmap indicava la presenza di un server ssh, quindi usando sempre le stesse credenzali ho provato a connettermi al server, ha funzionato. Il Privilege Escalation è stato abbastanza 
+facile in quanto l'utente che ho impersonato faceva parte del gruppo degli admin. Mi è bastato inserire il comando "sudo su" e ripetere la stessa password usata per l'accesso ssh per ottenre il privilegio di root. Ho usato putty in quanto essendo un server vecchio, il comando da CLI non funzionava a causa di algoritmi di cifratura non più utilizzati.
 
 ![UX Design Process/Toolkit](images/8.png)
+
+## Conclusione
+
+Le vulnerabilità che mi hanno permesso di ottenere il pieno controllo della macchina è stata la sql injection e la scarsa igiene di sicurezza in quanto le stesse credenziali erano valide in quattro situazioni diverse: login del sito, mail, ssh, sudo su.
+All'interno del server c'erano comunque altre bad practice che hanno facilitato l'attacco.
+
+Il mio consiglio: nel web server sostituire le chiamate GET con le chiamate POST, usare crendeziali diverse per ogni servizio, proteggersi dalle sql injection per esempio usando le store precedure, nel file robots.txt rimuovere file come \conf\ oppure \sql\ o almeno limitare l'accesso a solo gli admin. Inoltre andrebbe aumentata la sicurezza nella barra di ricerca per evitare gli attacchi XSS, in quanto, essendo un attacco di riflesso diretto agli altri utenti, si potrebbe comunque ottenere le credenziali nonostante sia stata sistemata la sql injection. Le password salvate tramite hash nel database va bene, ma andrebbe usata una funzione di hash non deprecata come lo sha256 e andrebbe aggiunto il salt per rendere più laborioso il tentativo di indovinare le password. Infine non usare il protocollo http ma usare https.
 
 ## Link consulati per lo svolgimento del progetto
 
